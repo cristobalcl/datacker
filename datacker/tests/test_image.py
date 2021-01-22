@@ -3,7 +3,7 @@ import unittest
 
 import docker
 
-from ..datacker import create_image, build_dockerfile
+from ..datacker import create_image, build_dockerfile, DOCKER_BASE
 
 
 docker_client = docker.from_env()
@@ -11,7 +11,7 @@ docker_client = docker.from_env()
 
 class TestDockerfile(unittest.TestCase):
     def test_build_empty_dockerfile(self):
-        expected = "FROM datacker"
+        expected = f"FROM {DOCKER_BASE}"
         dockerfile = build_dockerfile().split("\n")
         self.assertIn(expected, dockerfile)
 
@@ -76,5 +76,4 @@ class TestImage(unittest.TestCase):
                 },
             )
         finally:
-            # docker_client.images.remove(image_name, force=True)
-            pass
+            docker_client.images.remove(image_name, force=True)

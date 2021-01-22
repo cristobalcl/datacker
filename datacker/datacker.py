@@ -11,10 +11,12 @@ import docker
 
 docker_client = docker.from_env()
 
+DOCKER_BASE = "cristobalcl/datacker"
+
 
 def build_dockerfile(notebooks: Optional[List[str]] = None) -> str:
     notebooks = notebooks or []
-    dockerfile = ["FROM datacker"]
+    dockerfile = [f"FROM {DOCKER_BASE}"]
     for notebook in notebooks:
         dockerfile.append(f"ADD {notebook} /notebooks/")
     return "\n".join(dockerfile)

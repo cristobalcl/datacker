@@ -8,6 +8,7 @@ ADD run.py /
 ENTRYPOINT ["python", "run.py"]
 
 FROM base
+RUN pip install --no-cache-dir nbformat
 ADD test.ipynb /notebooks/
 ADD tests.sh /
 RUN /tests.sh
