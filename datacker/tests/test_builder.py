@@ -1,8 +1,6 @@
-import os
 import unittest
 from unittest.mock import MagicMock
 from pathlib import Path
-import tempfile
 
 import docker
 
@@ -24,13 +22,11 @@ class FakeFileSystem(FileSystemInterface):
         self.commands.append(("COPY", str(source), str(dest)))
 
     def delete(self, path: Path):
-        # self.commands.append(("DELETE", str(path)))
-        raise NotImplementedError  # pragma: no cover
+        self.commands.append(("DELETE", str(path)))
 
-    def create_temporal_directory(self) -> Path:
-        # self.commands.append(("TEMPORAL DIR", "tmp/dir"))
-        # return Path("tmp/dir")
-        raise NotImplementedError  # pragma: no cover
+    def create_temporary_directory(self) -> Path:
+        self.commands.append(("TEMPORARY DIR", "fake/tmp/dir"))
+        return Path("fake/tmp/dir")
 
 
 class TestDatackerBuilder(unittest.TestCase):
@@ -93,41 +89,73 @@ class TestDatackerBuilder(unittest.TestCase):
             docker_client=docker_client,
         )
         builder._build_image(working_path=Path("/tmp/test"))
-        docker_client.images.build.called_with("/tmp/test", "test_image")
+        docker_client.images.build.assert_called_with(
+            path="/tmp/test", tag="test_image"
+        )
 
-    def test_create_and_run_datacker(self):
+    def test_build(self):
         image_name = "datacker_test_create_image"
-        notebooks = [
-            Path(os.path.dirname(os.path.abspath(__file__)))
-            / "notebooks"
-            / "test.ipynb",
-        ]
-        builder = DatackerBuilder(image_name, notebooks)
-        try:
-            builder.build()
+        notebooks = [Path("path/to/notebook.ipynb")]
+        docker_client = MagicMock()
+        fs = FakeFileSystem()
+        builder = DatackerBuilder(
+            image_name, notebooks, fs=fs, docker_client=docker_client
+        )
+        builder.build()
+        self.assertIn(("TEMPORARY DIR", "fake/tmp/dir"), fs.commands)
+        self.assertIn(("DELETE", "fake/tmp/dir"), fs.commands)
+        self.assertIn(("COPY", "path/to/notebook.ipynb", "fake/tmp/dir"), fs.commands)
+        docker_client.images.build.assert_called_with(
+            path="fake/tmp/dir", tag=image_name
+        )
 
-            docker_client.images.get(image_name)
-            docker_client.containers.run(
-                image_name, environment=dict(NOTEBOOK_NAME="test"),
-            )
-        finally:
-            docker_client.images.remove(image_name, force=True)
-
-    def test_create_with_dir(self):
+    def test_build_with_dir(self):
         image_name = "datacker_test_create_image"
-        notebooks = [
-            Path(os.path.dirname(os.path.abspath(__file__)))
-            / "notebooks"
-            / "test.ipynb",
-        ]
-        builder = DatackerBuilder(image_name, notebooks)
-        try:
-            with tempfile.TemporaryDirectory() as working_dir:
-                builder.build(working_dir=working_dir)
+        notebooks = [Path("path/to/notebook.ipynb")]
+        docker_client = MagicMock()
+        fs = FakeFileSystem()
+        builder = DatackerBuilder(
+            image_name, notebooks, fs=fs, docker_client=docker_client
+        )
+        builder.build("/tmp/dir")
+        self.assertNotIn(("TEMPORARY DIR", "fake/tmp/dir"), fs.commands)
+        self.assertNotIn(("DELETE", "fake/tmp/dir"), fs.commands)
+        self.assertIn(("COPY", "path/to/notebook.ipynb", "/tmp/dir"), fs.commands)
+        docker_client.images.build.assert_called_with(path="/tmp/dir", tag=image_name)
 
-            docker_client.images.get(image_name)
-            docker_client.containers.run(
-                image_name, environment=dict(NOTEBOOK_NAME="test"),
-            )
-        finally:
-            docker_client.images.remove(image_name, force=True)
+    # def test_create_and_run_datacker(self):
+    #     image_name = "datacker_test_create_image"
+    #     notebooks = [
+    #         Path(os.path.dirname(os.path.abspath(__file__)))
+    #         / "notebooks"
+    #         / "test.ipynb",
+    #     ]
+    #     builder = DatackerBuilder(image_name, notebooks)
+    #     try:
+    #         builder.build()
+
+    #         docker_client.images.get(image_name)
+    #         docker_client.containers.run(
+    #             image_name, environment=dict(NOTEBOOK_NAME="test"),
+    #         )
+    #     finally:
+    #         docker_client.images.remove(image_name, force=True)
+
+    # def test_create_with_dir(self):
+    #     image_name = "datacker_test_create_image"
+    #     notebooks = [
+    #         Path(os.path.dirname(os.path.abspath(__file__)))
+    #         / "notebooks"
+    #         / "test.ipynb",
+    #     ]
+    #     builder = DatackerBuilder(image_name, notebooks)
+    #     try:
+    #         with tempfile.TemporaryDirectory() as working_dir:
+    #             builder.build(working_dir=working_dir)
+
+    #         docker_client.images.get(image_name)
+    #         docker_client.containers.run(
+    #             image_name, environment=dict(NOTEBOOK_NAME="test"),
+    #         )
+    #     finally:
+    #         docker_client.images.remove(image_name, force=True)

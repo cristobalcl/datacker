@@ -3,7 +3,6 @@ from pathlib import Path
 
 import docker
 
-# from .images import build_dockerfile, build_directory, build_image
 from .fs import FileSystemInterface, LocalFileSystem
 
 
@@ -23,7 +22,7 @@ class DatackerBuilder:
         self.name = name
         self.notebooks = [Path(notebook) for notebook in notebooks]
         if fs is None:
-            self.fs = LocalFileSystem()
+            self.fs = LocalFileSystem()  # pragma: no cover
         else:
             self.fs = fs
         if docker_client is None:
@@ -51,7 +50,7 @@ class DatackerBuilder:
         if working_dir is not None:
             working_path = Path(working_dir)
         else:
-            working_path = self.fs.create_temporal_directory()
+            working_path = self.fs.create_temporary_directory()
         try:
             self._build_directory(dockerfile, working_path)
             self._build_image(working_path)

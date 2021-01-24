@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 import shutil
 import tempfile
 from pathlib import Path
@@ -18,7 +19,7 @@ class FileSystemInterface(ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
-    def create_temporal_directory(self) -> Path:
+    def create_temporary_directory(self) -> Path:
         raise NotImplementedError  # pragma: no cover
 
 
@@ -33,5 +34,5 @@ class LocalFileSystem(FileSystemInterface):
     def delete(self, path: Path):
         shutil.rmtree(path)
 
-    def create_temporal_directory(self) -> Path:
-        return Path(tempfile.mkdtemp())
+    def create_temporary_directory(self, prefix: Optional[str] = None) -> Path:
+        return Path(tempfile.mkdtemp(prefix=prefix))
