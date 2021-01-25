@@ -25,6 +25,8 @@ jobs:
         
       - name: Install nox
         uses: excitedleigh/setup-nox@1.0.0      
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
       - name: Test
         run: |
