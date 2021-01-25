@@ -32,14 +32,14 @@ class FakeFileSystem(FileSystemInterface):
 class TestDatackerBuilder(unittest.TestCase):
     def test_build_empty_dockerfile(self):
         expected = f"FROM {DOCKER_BASE}"
-        builder = DatackerBuilder("test_image", [], FakeFileSystem())
+        builder = DatackerBuilder("test_image", [], fs=FakeFileSystem())
         dockerfile = builder._build_dockerfile().split("\n")
         self.assertIn(expected, dockerfile)
 
     def test_add_one_notebook(self):
         expected = "ADD hello_world.ipynb /notebooks/"
         builder = DatackerBuilder(
-            "test_image", [Path("hello_world.ipynb")], FakeFileSystem()
+            "test_image", [Path("hello_world.ipynb")], fs=FakeFileSystem()
         )
         dockerfile = builder._build_dockerfile().split("\n")
         self.assertIn(expected, dockerfile)
@@ -47,7 +47,7 @@ class TestDatackerBuilder(unittest.TestCase):
     def test_remove_path_from_notebook(self):
         expected = "ADD hello_world.ipynb /notebooks/"
         builder = DatackerBuilder(
-            "test_image", [Path("path/to/hello_world.ipynb")], FakeFileSystem()
+            "test_image", [Path("path/to/hello_world.ipynb")], fs=FakeFileSystem()
         )
         dockerfile = builder._build_dockerfile().split("\n")
         self.assertIn(expected, dockerfile)
@@ -60,16 +60,31 @@ class TestDatackerBuilder(unittest.TestCase):
         builder = DatackerBuilder(
             "test_image",
             [Path("hello_world_1.ipynb"), Path("hello_world_2.ipynb")],
-            FakeFileSystem(),
+            fs=FakeFileSystem(),
         )
         dockerfile = builder._build_dockerfile().split("\n")
         for line in expected:
             self.assertIn(line, dockerfile)
 
+    def test_add_requirements(self):
+        expected_lines = [
+            "ADD req.txt /",
+            "RUN pip install -r req.txt",
+        ]
+        builder = DatackerBuilder(
+            "test_image",
+            [Path("hello_world.ipynb")],
+            requirements_file="path/to/req.txt",
+            fs=FakeFileSystem(),
+        )
+        dockerfile = builder._build_dockerfile().split("\n")
+        for line in expected_lines:
+            self.assertIn(line, dockerfile)
+
     def test_build_directory(self):
         fs = FakeFileSystem()
         builder = DatackerBuilder(
-            "test_image", [Path("notebook_1.ipynb"), Path("notebook_2.ipynb")], fs
+            "test_image", [Path("notebook_1.ipynb"), Path("notebook_2.ipynb")], fs=fs
         )
         builder._build_directory(
             dockerfile="FROM TEST_BASE_IMAGE", working_path=Path("path/to/tmp")
@@ -80,12 +95,30 @@ class TestDatackerBuilder(unittest.TestCase):
             ("WRITE", "path/to/tmp/Dockerfile", "FROM TEST_BASE_IMAGE"), fs.commands
         )
 
+    def test_build_directory_with_requirements(self):
+        fs = FakeFileSystem()
+        builder = DatackerBuilder(
+            "test_image",
+            [Path("notebook_1.ipynb"), Path("notebook_2.ipynb")],
+            requirements_file="path/to/requirements.txt",
+            fs=fs,
+        )
+        builder._build_directory(
+            dockerfile="FROM TEST_BASE_IMAGE", working_path=Path("path/to/tmp")
+        )
+        self.assertIn(("COPY", "notebook_1.ipynb", "path/to/tmp"), fs.commands)
+        self.assertIn(("COPY", "notebook_2.ipynb", "path/to/tmp"), fs.commands)
+        self.assertIn(("COPY", "path/to/requirements.txt", "path/to/tmp"), fs.commands)
+        self.assertIn(
+            ("WRITE", "path/to/tmp/Dockerfile", "FROM TEST_BASE_IMAGE"), fs.commands
+        )
+
     def test_build_image(self):
         docker_client = MagicMock()
         builder = DatackerBuilder(
             "test_image",
             [Path("hello_world_1.ipynb"), Path("hello_world_2.ipynb")],
-            FakeFileSystem(),
+            fs=FakeFileSystem(),
             docker_client=docker_client,
         )
         builder._build_image(working_path=Path("/tmp/test"))

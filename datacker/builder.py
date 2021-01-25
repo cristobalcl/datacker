@@ -16,11 +16,15 @@ class DatackerBuilder:
         self,
         name: str,
         notebooks: List[str],
+        requirements_file: Optional[str] = None,
         fs: Optional[FileSystemInterface] = None,
         docker_client=None,
     ):
         self.name = name
         self.notebooks = [Path(notebook) for notebook in notebooks]
+        self.requirements_path = (
+            Path(requirements_file) if requirements_file is not None else None
+        )
         if fs is None:
             self.fs = LocalFileSystem()  # pragma: no cover
         else:
@@ -32,6 +36,9 @@ class DatackerBuilder:
 
     def _build_dockerfile(self) -> str:
         dockerfile = [f"FROM {DOCKER_BASE}"]
+        if self.requirements_path is not None:
+            dockerfile.append(f"ADD {self.requirements_path.parts[-1]} /")
+            dockerfile.append(f"RUN pip install -r {self.requirements_path.parts[-1]}")
         for notebook in self.notebooks:
             notebook_filename = notebook.parts[-1]
             dockerfile.append(f"ADD {notebook_filename} /notebooks/")
@@ -39,6 +46,8 @@ class DatackerBuilder:
 
     def _build_directory(self, dockerfile: str, working_path: Path):
         self.fs.write(working_path / "Dockerfile", dockerfile)
+        if self.requirements_path is not None:
+            self.fs.copy(self.requirements_path, working_path)
         for notebook in self.notebooks:
             self.fs.copy(notebook, working_path)
 
