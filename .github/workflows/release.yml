@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  push:
+    branches: [ master ]
+    #tags:
+    #  - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install poetry
+          python3 -m pip install nox
+
+      - name: Test
+        run: |
+          nox
