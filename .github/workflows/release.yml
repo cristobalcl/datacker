@@ -45,5 +45,5 @@ jobs:
           file: docker/Dockerfile
           push: true
           tags: |
-            "${{ secrets.DOCKER_USERNAME }}/datacker:latest"
-            "${{ secrets.DOCKER_USERNAME }}/datacker:0.1.1"
+            "${{ secrets.DOCKERHUB_USERNAME }}/datacker:latest"
+            "${{ secrets.DOCKERHUB_USERNAME }}/datacker:0.1.0"
