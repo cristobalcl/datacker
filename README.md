@@ -7,7 +7,7 @@
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-Convert your notebooks to runnable Docker images. The quickest way to bring Data Science work to production.
+Convert your notebooks to runnable Docker images. The quickest way to bring Data Scientists work to production.
 
 ## Introduction
 
