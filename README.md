@@ -12,6 +12,12 @@ Convert your notebooks to runnable Docker images. The quickest way to bring Data
 
 **Datacker** creates Docker images from one or more Jupyter Notebooks. You also can add a `requirements.txt` with the code dependencies. The result Docker image can execute the notebook by itself, and store the new notebook in a directory that can be bind mounted to a directory in the host machine for persisting (in next versions, the result can be stored in the cloud, in S3 for example). Parameters can be passed to the notebook dinamically.
 
+## Install
+
+```
+$ pip install datacker
+```
+
 ## Usage
 
 ```
@@ -68,5 +74,6 @@ To know how to add the tag to a cell check [How should I add cell tags and metad
 ## Roadmap
 
 * Store results in the cloud (S3, Azure,...).
-* Examples of deploying in Kubernetes.
+* Option to send the result of the execution to stdout as markdown.
+* Deploying to Kubernetes.
 * Documentation.
