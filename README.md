@@ -2,6 +2,7 @@
 
 [![Release](https://github.com/cristobalcl/datacker/workflows/Release/badge.svg)](https://github.com/cristobalcl/datacker/actions?query=workflow%3ARelease)
 [![Tests](https://github.com/cristobalcl/datacker/workflows/Tests/badge.svg)](https://github.com/cristobalcl/datacker/actions?query=workflow%3ATests)
+[![codecov](https://codecov.io/gh/cristobalcl/datacker/branch/master/graph/badge.svg?token=VNCSSJOE9L)](https://codecov.io/gh/cristobalcl/datacker)
 [![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
