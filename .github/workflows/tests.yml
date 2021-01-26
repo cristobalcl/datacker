@@ -27,7 +27,8 @@ jobs:
         run: |
           nox
 
-      - uses: codecov/codecov-action@v1
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
         with:
           files: ./coverage.xml
           flags: unittests
