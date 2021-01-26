@@ -1,13 +1,12 @@
-name: Release
+name: CI
 
 on:
   push:
-    branches: [ master ]
-    #tags:
-    #  - '*.*.*'
+    tags:
+      - '*.*.*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,7 +43,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Datacker base image
+      - name: Build and push Docker base image
         uses: docker/build-push-action@v2
         with:
           context: docker/.
@@ -54,7 +53,7 @@ jobs:
             "${{ secrets.DOCKERHUB_USERNAME }}/datacker:latest"
             "${{ secrets.DOCKERHUB_USERNAME }}/datacker:${{ env.RELEASE_VERSION }}"
 
-      - name: Build and publish
+      - name: Build and publish Python package
         run: poetry publish --build
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
