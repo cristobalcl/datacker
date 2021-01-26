@@ -31,8 +31,6 @@ jobs:
         with:
           files: ./coverage.xml
           flags: unittests
-          fail_ci_if_error: true
-          verbose: true
 
       - name: Install Poetry
         uses: dschep/install-poetry-action@v1.2
