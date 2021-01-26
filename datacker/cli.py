@@ -20,7 +20,17 @@ def main(
         show_default=False,
     ),
 ):
+    image_name_styled = typer.style(image_name, fg=typer.colors.GREEN, bold=True)
+    typer.echo(f"Create image {image_name_styled} with notebooks:")
+    typer.echo()
+    for notebook in notebooks:
+        notebook_styled = typer.style(notebook, fg=typer.colors.BLUE, bold=True)
+        typer.echo(f" → {notebook_styled}")
+    typer.echo()
     builder = DatackerBuilder(
         image_name, list(notebooks), requirements_file=requirements_file
     )
+    typer.echo("Building...")
+    typer.echo()
     builder.build()
+    typer.secho("Done!", fg=typer.colors.GREEN, bold=True)
