@@ -27,6 +27,14 @@ jobs:
         run: |
           nox
 
+      - name: Install Poetry
+        uses: dschep/install-poetry-action@v1.2
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+      - name: Get release version
+        run: echo "RELEASE_VERSION=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         
@@ -44,12 +52,7 @@ jobs:
           push: true
           tags: |
             "${{ secrets.DOCKERHUB_USERNAME }}/datacker:latest"
-            "${{ secrets.DOCKERHUB_USERNAME }}/datacker:0.1.0"
-
-      - name: Install Poetry
-        uses: dschep/install-poetry-action@v1.2
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+            "${{ secrets.DOCKERHUB_USERNAME }}/datacker:${{ env.RELEASE_VERSION }}"
 
       - name: Build and publish
         run: poetry publish --build
