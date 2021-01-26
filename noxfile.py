@@ -7,6 +7,7 @@ def tests(session):
     session.run("poetry", "install")
     session.run("coverage", "run", "-m", "pytest")
     session.run("coverage", "report")
+    session.run("coverage", "xml")
 
 
 @nox.session
