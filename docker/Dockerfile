@@ -1,11 +1,12 @@
 # Datacker base image
 FROM python:3.8-slim as base
 MAINTAINER Cristóbal Carnero Liñán "ccarnerolinan@gmail.com"
-RUN pip install --no-cache-dir papermill
-RUN pip install --no-cache-dir ipykernel
+RUN pip install pip --upgrade && \
+      pip install --no-cache-dir papermill && \
+      pip install --no-cache-dir ipykernel
 RUN mkdir notebooks && mkdir output
-ADD run.py /
-ENTRYPOINT ["python", "run.py"]
+ADD datacker_runner /datacker_runner
+ENTRYPOINT ["python", "-m", "datacker_runner.run"]
 
 FROM base
 RUN pip install --no-cache-dir nbformat

@@ -2,6 +2,7 @@
 
 import sys
 import os
+from datetime import datetime
 from ast import literal_eval
 import json
 from pathlib import Path
@@ -26,9 +27,10 @@ def main() -> int:
     output_path = Path("/output/")
     notebook_name = os.environ["NOTEBOOK_NAME"]
     parameters = get_parameters(os.environ)
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
     pm.execute_notebook(
         notebooks_path / f"{notebook_name}.ipynb",
-        output_path / f"{notebook_name}.ipynb",
+        output_path / f"{timestamp}_{notebook_name}.ipynb",
         parameters=parameters,
     )
 
