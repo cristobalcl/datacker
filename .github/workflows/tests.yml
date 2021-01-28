@@ -47,8 +47,8 @@ jobs:
       - name: Build and push Docker base image
         uses: docker/build-push-action@v2
         with:
-          context: docker/.
-          file: docker/Dockerfile
+          context: runner/.
+          file: runner/Dockerfile
           push: false
           tags: |
             "${{ secrets.DOCKERHUB_USERNAME }}/datacker:latest"
