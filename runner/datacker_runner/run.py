@@ -13,7 +13,7 @@ import papermill as pm
 PARAMETER_PREFIX = "PARAM_"
 
 
-def get_parameters(environment):
+def get_parameters(environment) -> dict:
     parameters = json.loads(environment.get("PARAMETERS", "{}"))
     for key, value in environment.items():
         if not key.startswith(PARAMETER_PREFIX):

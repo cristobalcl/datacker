@@ -9,9 +9,12 @@ ADD datacker_runner /datacker_runner
 ENTRYPOINT ["python", "-m", "datacker_runner.run"]
 
 FROM base
-RUN pip install --no-cache-dir nbformat
-ADD test.ipynb /notebooks/
-ADD tests.sh /
+RUN pip install --no-cache-dir pytest && \
+      pip install --no-cache-dir nbformat
+RUN cd datacker_runner && \
+      pytest
+ADD tests/test.ipynb /notebooks/
+ADD tests/tests.sh /
 RUN /tests.sh
 
 FROM base
