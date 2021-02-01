@@ -8,6 +8,7 @@ RUN mkdir notebooks && mkdir output
 ADD datacker_runner /datacker_runner
 ENTRYPOINT ["python", "-m", "datacker_runner.run"]
 
+# Test the image
 FROM base
 RUN pip install --no-cache-dir pytest && \
       pip install --no-cache-dir nbformat
