@@ -11,7 +11,7 @@ Convert your notebooks to runnable Docker images. The quickest way to bring Data
 
 ## Introduction
 
-**Datacker** creates Docker images from one or more Jupyter Notebooks. You also can add a `requirements.txt` with the code dependencies. The result Docker image can execute the notebook by itself, and store the new notebook in a directory that can be bind mounted to a directory in the host machine for persisting (in next versions, the result can be stored in the cloud, in S3 for example). Parameters can be passed to the notebook dinamically.
+**Datacker** creates Docker images from one or more Jupyter Notebooks. You also can add a `requirements.txt` with the code dependencies. The result Docker image can execute the notebook by itself, and store the new notebook in a directory that can be bind mounted to a directory in the host machine for persisting (in next versions, the result can be stored in the cloud, in S3 for example). Parameters can be passed to the notebook dynamically.
 
 ## Install
 
@@ -62,7 +62,7 @@ docker run --env NOTEBOOK_NAME=pie \
 
 The name of the notebook is passed in the environment variable `NOTEBOOK_NAME`.
 
-This example shows two ways for passing parameters to the notebooks: using the environment variable `PARAMETERS`, that accepts a JSON with the parameters; and the other way is using environment variables with a name like `PARAM_[var_name]`, that accepts values with a Python representation: float as `'3.1415'`, string as `'"Hello World!"'`, and so on. Variables defined with `PARAM_[var_name]` have priority.
+This example shows two ways for passing parameters to the notebooks: using the environment variable `PARAMETERS`, that accepts a JSON with the parameters; and the other way is using environment variables with a name like `PARAM_[var_name]`, that accepts values with a Python representation: float as `'3.1415'`, string as `'"Hello World!"'`, and so on. Variables defined with `PARAM_[var_name]` have higher priority.
 
 The results will be stored in the `output` directory on the host.
 
