@@ -43,15 +43,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker base image
+      - name: Build, test, and push Docker base image
         uses: docker/build-push-action@v2
         with:
           context: runner/.
           file: runner/Dockerfile
           push: true
           tags: |
-            "${{ secrets.DOCKERHUB_USERNAME }}/datacker:latest"
-            "${{ secrets.DOCKERHUB_USERNAME }}/datacker:${{ env.RELEASE_VERSION }}"
+            "datacker/datacker:latest"
+            "datacker/datacker:${{ env.RELEASE_VERSION }}"
 
       - name: Build and publish Python package
         run: poetry publish --build
